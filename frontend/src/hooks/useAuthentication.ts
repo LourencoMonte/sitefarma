@@ -8,3 +8,6 @@ export function useAuthentication() {
   }
   return context;
 }
+
+// Alias for convenience
+export const useAuth = useAuthentication;

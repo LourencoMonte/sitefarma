@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Backend FastAPI (conecta ao Supabase)
+  backend:
+    build: ./backend
+    container_name: sitefarma-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # Frontend React/Vite
+  frontend:
+    build: ./frontend
+    container_name: sitefarma-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
