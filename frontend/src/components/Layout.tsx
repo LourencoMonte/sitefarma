@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { AuthProvider } from '@/contexts/AuthProvider';
 import { MedicationProvider } from '@/contexts/MedicamentationProvider';
+import { Toaster } from 'sonner';
 
 export function Layout() {
   return (
@@ -13,6 +14,7 @@ export function Layout() {
             <Outlet />
           </main>
         </div>
+        <Toaster richColors position="top-right" />
       </MedicationProvider>
     </AuthProvider>
   );

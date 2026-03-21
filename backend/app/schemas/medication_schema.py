@@ -9,6 +9,7 @@ class MedicationCreate(BaseModel):
     price: float
     description: Optional[str] = None
     available: bool = True
+    is_free: bool = False
 
 class MedicationUpdate(BaseModel):
     name: Optional[str] = None
@@ -18,3 +19,4 @@ class MedicationUpdate(BaseModel):
     price: Optional[float] = None
     description: Optional[str] = None
     available: Optional[bool] = None
+    is_free: Optional[bool] = None

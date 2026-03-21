@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthentication } from '@/hooks/useAuthentication';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -14,10 +14,11 @@ export function Login() {
   const { login } = useAuthentication();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (login(email, password)) {
+    const success = await login(email, password);
+    if (success) {
       toast.success('Login realizado com sucesso!');
       navigate('/');
     } else {
@@ -35,7 +36,7 @@ export function Login() {
           <div className="text-center">
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
-              Entre com suas credenciais para gerenciar medicamentos
+              Entre com suas credenciais para acessar o sistema
             </CardDescription>
           </div>
         </CardHeader>
@@ -69,8 +70,19 @@ export function Login() {
               Entrar
             </Button>
 
+            <div className="text-right">
+              <Link to="/esqueci-senha" className="text-sm text-primary hover:underline">
+                Esqueceu sua senha?
+              </Link>
+            </div>
+
             <div className="text-center text-sm text-gray-600 mt-4">
-              <p>Use qualquer email e senha para fazer login (demo)</p>
+              <p>
+                Não tem uma conta?{' '}
+                <Link to="/cadastro" className="text-primary hover:underline font-medium">
+                  Cadastre-se
+                </Link>
+              </p>
             </div>
           </form>
         </CardContent>

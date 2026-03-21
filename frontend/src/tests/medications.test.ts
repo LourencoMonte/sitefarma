@@ -55,6 +55,7 @@ describe('medicationService', () => {
         price: 15.99,
         description: 'Anti-inflamatório',
         available: true,
+        is_free: false,
       };
       
       const mockResponse = { id: '3', ...newMedication };
@@ -77,6 +78,7 @@ describe('medicationService', () => {
         price: 9.99,
         description: 'Analgésico',
         available: false,
+        is_free: false,
       };
       const mockResponse = { id: '1', ...updateData };
       

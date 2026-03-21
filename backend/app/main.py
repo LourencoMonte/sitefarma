@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from app.api import medications, users
+from app.api import medications, users, reservations
 from app.core.config import settings
 
 app = FastAPI(
@@ -38,6 +38,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Inclui as rotas organizadas por arquivo
 app.include_router(medications.router)
 app.include_router(users.router)
+app.include_router(reservations.router)
 
 
 @app.get("/")

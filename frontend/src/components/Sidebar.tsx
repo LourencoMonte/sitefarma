@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Plus, Search } from 'lucide-react';
-import { useAuthentication } from '@/hooks/useAuthentication';
+import { Home, Plus, Search, Package, UserPlus, ClipboardList } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuthentication';
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +16,7 @@ import {
 import { Logo } from './Logo';
 
 export function AppSidebar() {
-  const { isAuthenticated } = useAuthentication();
+  const { isAuthenticated, isAdmin } = useAuth();
   const location = useLocation();
 
   const menuItems = [
@@ -32,11 +32,31 @@ export function AppSidebar() {
     },
   ];
 
-  const authMenuItems = [
+  // Menu para usuários comuns (não-admin)
+  const userMenuItems = [
+    {
+      title: 'Minhas Reservas',
+      url: '/minhas-reservas',
+      icon: Package,
+    },
+  ];
+
+  // Menu para administradores
+  const adminMenuItems = [
     {
       title: 'Cadastrar Medicamento',
       url: '/cadastrar',
       icon: Plus,
+    },
+    {
+      title: 'Cadastrar Usuário',
+      url: '/usuarios/criar',
+      icon: UserPlus,
+    },
+    {
+      title: 'Gerenciar Reservas',
+      url: '/reservas',
+      icon: ClipboardList,
     },
   ];
 
@@ -66,12 +86,34 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {isAuthenticated && (
+        {/* Menu para usuários comuns autenticados */}
+        {isAuthenticated && !isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Minhas Atividades</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {userMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                      <Link to={item.url}>
+                        <item.icon className="size-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Menu para administradores */}
+        {isAuthenticated && isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Administração</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {authMenuItems.map((item) => (
+                {adminMenuItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={location.pathname === item.url}>
                       <Link to={item.url}>

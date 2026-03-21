@@ -23,7 +23,8 @@ export function CreateMedication() {
     quantity: 0,
     price: 0,
     description: '',
-    available: true
+    available: true,
+    is_free: false
   });
 
   // Redirecionar se não estiver autenticado
@@ -32,12 +33,15 @@ export function CreateMedication() {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    addMedication(formData);
-    toast.success('Medicamento cadastrado com sucesso!');
-    navigate('/');
+    try {
+      await addMedication(formData);
+      toast.success('Medicamento cadastrado com sucesso!');
+      navigate('/');
+    } catch (error: any) {
+      toast.error(error.response?.data?.detail || 'Erro ao cadastrar medicamento');
+    }
   };
 
   const handleChange = (field: string, value: string | number | boolean) => {
@@ -148,6 +152,17 @@ export function CreateMedication() {
               />
               <Label htmlFor="available" className="cursor-pointer">
                 Medicamento disponível para venda
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_free"
+                checked={formData.is_free}
+                onCheckedChange={(checked) => handleChange('is_free', checked)}
+              />
+              <Label htmlFor="is_free" className="cursor-pointer">
+                Medicamento gratuito
               </Label>
             </div>
 

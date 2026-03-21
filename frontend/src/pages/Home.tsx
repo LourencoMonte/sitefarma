@@ -1,22 +1,44 @@
 import { useState } from 'react';
 import { useMedications } from '@/hooks/useMedication';
-import { useAuthentication } from '@/hooks/useAuthentication';
+import { useAuth } from '@/hooks/useAuthentication';
+import { reservationService } from '@/services';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { Search, Edit, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Edit, CheckCircle, XCircle, ShoppingCart, Minus, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export function Home() {
   const { medications } = useMedications();
-  const { isAuthenticated } = useAuthentication();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
+  const [reservingId, setReservingId] = useState<string | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const getQuantity = (id: string) => quantities[id] || 1;
+  const setQuantity = (id: string, qty: number) => {
+    setQuantities(prev => ({ ...prev, [id]: qty }));
+  };
 
   const filteredMedications = medications.filter(med =>
     med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     med.laboratory.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleReserve = async (medicationId: string) => {
+    setReservingId(medicationId);
+    try {
+      await reservationService.create({ medication_id: medicationId, quantity: getQuantity(medicationId) });
+      toast.success('Medicamento reservado com sucesso! Retire hoje na farmácia.');
+      setQuantities(prev => ({ ...prev, [medicationId]: 1 }));
+    } catch (error: any) {
+      toast.error(error.response?.data?.detail || 'Erro ao reservar medicamento');
+    } finally {
+      setReservingId(null);
+    }
+  };
 
   return (
     <div className="w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 max-w-7xl mx-auto">
@@ -81,24 +103,68 @@ export function Home() {
                   <span className="text-gray-600">Quantidade:</span>
                   <span className="font-medium">{medication.quantity} unidades</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-gray-600">Preço:</span>
-                  <span className="font-medium text-emerald-600">
-                    R$ {medication.price.toFixed(2)}
-                  </span>
+                  {medication.is_free ? (
+                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                      Gratuito
+                    </Badge>
+                  ) : (
+                    <span className="font-medium text-emerald-600">
+                      R$ {medication.price.toFixed(2)}
+                    </span>
+                  )}
                 </div>
                 <p className="text-gray-600 text-xs mt-3 pt-3 border-t">
                   {medication.description}
                 </p>
                 
-                {isAuthenticated && (
-                  <Link to={`/editar/${medication.id}`} className="block mt-4">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Edit className="size-4 mr-2" />
-                      Editar
-                    </Button>
-                  </Link>
-                )}
+                <div className="mt-4 space-y-2">
+                  {/* Botão de reserva para usuários comuns */}
+                  {isAuthenticated && !isAdmin && medication.available && medication.quantity > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="size-8"
+                          onClick={() => setQuantity(medication.id, Math.max(1, getQuantity(medication.id) - 1))}
+                        >
+                          <Minus className="size-4" />
+                        </Button>
+                        <span className="w-8 text-center font-medium">{getQuantity(medication.id)}</span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="size-8"
+                          onClick={() => setQuantity(medication.id, Math.min(Math.min(medication.quantity, 5), getQuantity(medication.id) + 1))}
+                        >
+                          <Plus className="size-4" />
+                        </Button>
+                      </div>
+                      <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => handleReserve(medication.id)}
+                        disabled={reservingId === medication.id}
+                      >
+                        <ShoppingCart className="size-4 mr-2" />
+                        {reservingId === medication.id ? 'Reservando...' : 'Reservar'}
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Botão de edição para admins */}
+                  {isAuthenticated && isAdmin && (
+                    <Link to={`/editar/${medication.id}`} className="block">
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Edit className="size-4 mr-2" />
+                        Editar
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

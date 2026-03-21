@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from './Logo';
 import { useAuthentication } from '@/hooks/useAuthentication';
 import { Button } from './ui/button';
-import { LogOut, User, Plus, Search, Menu } from 'lucide-react';
+import { LogOut, User, Plus, Search, Menu, Package, ClipboardList } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -13,7 +13,7 @@ import {
 } from './ui/sheet';
 
 export function Header() {
-  const { user, logout, isAuthenticated } = useAuthentication();
+  const { user, logout, isAuthenticated, isAdmin } = useAuthentication();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -46,12 +46,29 @@ export function Header() {
 
             {isAuthenticated ? (
               <>
-                <Link to="/cadastrar">
-                  <Button variant="ghost" size="sm">
-                    <Plus className="size-4 mr-2" />
-                    Cadastrar
-                  </Button>
-                </Link>
+                {isAdmin ? (
+                  <>
+                    <Link to="/cadastrar">
+                      <Button variant="ghost" size="sm">
+                        <Plus className="size-4 mr-2" />
+                        Cadastrar
+                      </Button>
+                    </Link>
+                    <Link to="/reservas">
+                      <Button variant="ghost" size="sm">
+                        <ClipboardList className="size-4 mr-2" />
+                        Reservas
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <Link to="/minhas-reservas">
+                    <Button variant="ghost" size="sm">
+                      <Package className="size-4 mr-2" />
+                      Reservas
+                    </Button>
+                  </Link>
+                )}
                 
                 <div className="flex items-center gap-2 ml-4 pl-4 border-l border-gray-200">
                   <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -98,12 +115,29 @@ export function Header() {
 
               {isAuthenticated ? (
                 <>
-                  <Link to="/cadastrar" onClick={handleNavigate}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Plus className="size-4 mr-2" />
-                      Cadastrar
-                    </Button>
-                  </Link>
+                  {isAdmin ? (
+                    <>
+                      <Link to="/cadastrar" onClick={handleNavigate}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <Plus className="size-4 mr-2" />
+                          Cadastrar
+                        </Button>
+                      </Link>
+                      <Link to="/reservas" onClick={handleNavigate}>
+                        <Button variant="ghost" className="w-full justify-start">
+                          <ClipboardList className="size-4 mr-2" />
+                          Reservas
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <Link to="/minhas-reservas" onClick={handleNavigate}>
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Package className="size-4 mr-2" />
+                        Reservas
+                      </Button>
+                    </Link>
+                  )}
                   
                   <div className="border-t border-gray-200 mt-4 pt-4">
                     <div className="flex items-center gap-2 text-sm text-gray-700 px-4 py-2">

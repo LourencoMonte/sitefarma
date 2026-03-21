@@ -39,7 +39,8 @@ export function EditMedication() {
         quantity: medication.quantity,
         price: medication.price,
         description: medication.description,
-        available: medication.available
+        available: medication.available,
+        is_free: medication.is_free ?? false
       };
     }
     return {
@@ -49,7 +50,8 @@ export function EditMedication() {
       quantity: 0,
       price: 0,
       description: '',
-      available: true
+      available: true,
+      is_free: false
     };
   });
 
@@ -65,21 +67,28 @@ export function EditMedication() {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (id) {
-      updateMedication(id, formData);
-      toast.success('Medicamento atualizado com sucesso!');
-      navigate('/');
+      try {
+        await updateMedication(id, formData);
+        toast.success('Medicamento atualizado com sucesso!');
+        navigate('/');
+      } catch (error: any) {
+        toast.error(error.response?.data?.detail || 'Erro ao atualizar medicamento');
+      }
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (id) {
-      deleteMedication(id);
-      toast.success('Medicamento excluído com sucesso!');
-      navigate('/');
+      try {
+        await deleteMedication(id);
+        toast.success('Medicamento excluído com sucesso!');
+        navigate('/');
+      } catch (error: any) {
+        toast.error(error.response?.data?.detail || 'Erro ao excluir medicamento');
+      }
     }
   };
 
@@ -191,6 +200,17 @@ export function EditMedication() {
               />
               <Label htmlFor="available" className="cursor-pointer">
                 Medicamento disponível para venda
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_free"
+                checked={formData.is_free}
+                onCheckedChange={(checked) => handleChange('is_free', checked)}
+              />
+              <Label htmlFor="is_free" className="cursor-pointer">
+                Medicamento gratuito
               </Label>
             </div>
 

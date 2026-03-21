@@ -7,12 +7,14 @@ export interface Medication {
   price: number;
   description: string;
   available: boolean;
+  is_free: boolean;
 }
 
 export interface MedicationContextType {
   medications: Medication[];
-  addMedication: (medication: Omit<Medication, 'id'>) => void;
-  updateMedication: (id: string, medication: Omit<Medication, 'id'>) => void;
-  deleteMedication: (id: string) => void;
+  loading: boolean;
+  addMedication: (medication: Omit<Medication, 'id'>) => Promise<void>;
+  updateMedication: (id: string, medication: Omit<Medication, 'id'>) => Promise<void>;
+  deleteMedication: (id: string) => Promise<void>;
   getMedicationById: (id: string) => Medication | undefined;
 }

@@ -4,7 +4,7 @@ import type { Medication } from '@/types/medication';
 export const medicationService = {
   // List all medications
   getAll: async (): Promise<Medication[]> => {
-    const response = await api.get<Medication[]>('/medications');
+    const response = await api.get<Medication[]>('/medications/');
     return response.data;
   },
 
@@ -22,7 +22,7 @@ export const medicationService = {
 
   // Create new medication
   create: async (medication: Omit<Medication, 'id'>): Promise<Medication> => {
-    const response = await api.post<Medication>('/medications', medication);
+    const response = await api.post<Medication>('/medications/', medication);
     return response.data;
   },
 

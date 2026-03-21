@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { AuthContext } from '@/contexts/AuthContext';
 import { authService } from '@/services';
 import type { User } from '@/types/user';
+import { toast } from 'sonner';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -14,9 +15,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (token) {
         try {
           const profile = await authService.getProfile();
-          setUser(profile);
+          if (!profile || !profile.name || !profile.email) {
+            localStorage.removeItem('access_token');
+            setUser(null);
+          } else {
+            setUser(profile);
+          }
         } catch {
           localStorage.removeItem('access_token');
+          setUser(null);
         }
       }
       setIsLoading(false);
@@ -26,23 +33,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Aqui você faria a chamada real de login ao Supabase
-      // Por enquanto, simulamos salvando o "token" e buscando o perfil
-      if (email && password) {
-        // Em produção: const { access_token } = await supabase.auth.signInWithPassword({ email, password });
-        localStorage.setItem('access_token', 'mock_token');
-        
-        // Simula usuário - em produção, buscar do Supabase
-        setUser({
-          id: '1',
-          name: 'Administrador',
-          email: email,
-          perfil: 'admin'
-        });
-        return true;
-      }
-      return false;
-    } catch {
+      const { access_token, user } = await authService.login(email, password);
+      localStorage.setItem('access_token', access_token);
+      setUser(user);
+      return true;
+    } catch (error: any) {
+      const detail = error.response?.data?.detail || 'E-mail ou senha inválidos';
+      toast.error(detail);
       return false;
     }
   };
