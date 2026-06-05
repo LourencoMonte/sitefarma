@@ -37,8 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('access_token', access_token);
       setUser(user);
       return true;
-    } catch (error: any) {
-      const detail = error.response?.data?.detail || 'E-mail ou senha inválidos';
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { detail?: string } } };
+      const detail = err.response?.data?.detail || 'E-mail ou senha inválidos';
       toast.error(detail);
       return false;
     }
