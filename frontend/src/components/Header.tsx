@@ -75,7 +75,7 @@ export function Header() {
                     <User className="size-4" />
                     <span>{user?.name}</span>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Sair da conta">
                     <LogOut className="size-4" />
                   </Button>
                 </div>
@@ -97,7 +97,7 @@ export function Header() {
         {/* Menu à esquerda */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0">
+            <Button variant="ghost" size="icon" className="shrink-0" aria-label="Abrir menu de navegação">
               <Menu className="size-5" />
             </Button>
           </SheetTrigger>
