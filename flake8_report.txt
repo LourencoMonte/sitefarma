@@ -1,0 +1,2 @@
+Comando 'flake8' não encontrado, mas poder ser instalado com:
+sudo apt install flake8
