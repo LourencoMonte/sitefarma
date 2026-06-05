@@ -11,6 +11,20 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separa as libs grandes em chunks próprios
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
+        },
+      },
+    },
+    // Minificação explícita do bundle de produção
+    minify: 'esbuild',
+    target: 'esnext',
+  },
   server: {
     proxy: {
       '/api': {
